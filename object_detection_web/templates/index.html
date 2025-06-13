@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Object Detection Video Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        video {
+            margin-top: 20px;
+            width: 640px;
+            height: auto;
+        }
+        button {
+            padding: 10px 15px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Upload Video for Object Detection</h1>
+    <form id="uploadForm">
+        <input type="file" name="video" accept="video/*" required>
+        <br><br>
+        <button type="submit">Upload & Process</button>
+    </form>
+
+    <div id="videoContainer" style="display:none;">
+        <h3>Processed Video:</h3>
+        <video id="processedVideo" controls></video>
+        <br>
+        <a id="downloadLink" download>Download Video</a>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('uploadForm');
+    const videoEl = document.getElementById('processedVideo');
+    const videoContainer = document.getElementById('videoContainer');
+    const downloadLink = document.getElementById('downloadLink');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+
+        fetch('/process', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            videoEl.src = data.video_url;
+            downloadLink.href = data.video_url.replace('/static/processed/', '/download/');
+            downloadLink.innerText = 'Download Processed Video';
+            videoContainer.style.display = 'block';
+        });
+    });
+</script>
+</body>
+</html>
